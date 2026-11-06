@@ -12,7 +12,7 @@ load_dotenv(BASE_DIR / '.env')
 # SEGURIDAD: En producción usa variables de entorno
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-smartgarden-dev-key-change-in-prod')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 # ==========================================
 # 1. DEFINICIÓN DE APLICACIONES
