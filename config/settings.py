@@ -11,8 +11,12 @@ load_dotenv(BASE_DIR / '.env')
 
 # SEGURIDAD: En producción usa variables de entorno
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-smartgarden-dev-key-change-in-prod')
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['*']
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
+    if host.strip()
+]
 
 # ==========================================
 # 1. DEFINICIÓN DE APLICACIONES
@@ -138,6 +142,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]
+if os.environ.get('CORS_ALLOWED_ORIGINS'):
+    CORS_ALLOWED_ORIGINS = [
+        origin.strip()
+        for origin in os.environ['CORS_ALLOWED_ORIGINS'].split(',')
+        if origin.strip()
+    ]
 CORS_ALLOW_CREDENTIALS = True
 
 # ==========================================
@@ -160,5 +170,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR.parent / 'Web-React' / 'dist']
+FRONTEND_DIST = BASE_DIR.parent / 'Web-React' / 'dist'
+STATICFILES_DIRS = [FRONTEND_DIST] if FRONTEND_DIST.exists() else []
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

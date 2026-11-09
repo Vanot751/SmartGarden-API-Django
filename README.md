@@ -197,3 +197,58 @@ python manage.py test
 - Configurar correctamente `DATABASE_URL` y las credenciales de la API externa.
 - Restringir `ALLOWED_HOSTS` y `CORS_ALLOWED_ORIGINS` a los dominios reales.
 - Ejecutar detrás de un servidor WSGI/ASGI y HTTPS.
+
+## Despliegue en Vercel
+
+Este repositorio es detectado automáticamente como una aplicación Django porque
+contiene `manage.py`. Vercel usa `config/wsgi.py` como una Function y ejecuta
+`collectstatic` automáticamente porque `STATIC_ROOT` está configurado.
+
+### Configuración del proyecto
+
+1. En Vercel, seleccionar **Add New Project > Import Git Repository** y elegir
+   este repositorio.
+2. Dejar el **Root Directory** en la raíz del repositorio.
+3. No configurar un Build Command personalizado. Vercel instala
+   `requirements.txt` y detecta Django automáticamente.
+4. Configurar estas variables en **Settings > Environment Variables**:
+
+   ```text
+   DJANGO_SECRET_KEY=<clave-secreta-larga-y-aleatoria>
+   DJANGO_DEBUG=False
+   DJANGO_ALLOWED_HOSTS=<proyecto>.vercel.app
+   DATABASE_URL=postgresql://...
+   PLANT_API_BASE_URL=https://perenual.com/api/species-list
+   PLANT_API_KEY=<api-key>
+   CORS_ALLOWED_ORIGINS=https://<frontend>.vercel.app
+   ```
+
+   `DATABASE_URL` debe apuntar a PostgreSQL/Supabase. No se debe usar una base
+   SQLite local en Vercel porque el sistema de archivos de las Functions no es
+   persistente.
+5. Hacer clic en **Deploy**. Cada push a la rama de producción crea un nuevo
+   despliegue; los pull requests pueden crear despliegues de preview.
+
+### Migraciones y superusuario
+
+Las migraciones deben ejecutarse contra la base de datos de producción, no
+durante cada invocación de la Function:
+
+```bash
+vercel env pull .env.local
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+También se pueden ejecutar desde una máquina con acceso a la misma
+`DATABASE_URL`, manteniendo `.env.local` fuera del repositorio.
+
+Después del despliegue, comprobar:
+
+```text
+https://<proyecto>.vercel.app/api/docs/
+https://<proyecto>.vercel.app/admin/
+```
+
+La aplicación Android debe usar la URL pública incluyendo `/api`, por ejemplo:
+`https://<proyecto>.vercel.app/api`.
