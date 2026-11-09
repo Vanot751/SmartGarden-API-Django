@@ -10,6 +10,7 @@ aislamiento multiusuario.
 - Asociación de una planta por módulo, con umbrales personalizables.
 - Ingesta y consulta histórica de telemetría.
 - Filtros de telemetría por módulo y rango de fechas.
+- Catálogo inicial de plantas comunes en Chile con imágenes y parámetros recomendados.
 - Búsqueda de especies mediante un proxy seguro hacia la API botánica externa.
 - Documentación interactiva con OpenAPI y Swagger UI.
 - Simulador de lecturas IoT incluido en `iot_simulator.py`.
@@ -109,6 +110,7 @@ El token de acceso dura 60 minutos y el de renovación dura 7 días.
 | GET/POST | `/api/user-plants/` | Listar o asignar plantas |
 | GET/PATCH/DELETE | `/api/user-plants/<id>/` | Gestionar una planta asignada |
 | GET/POST | `/api/telemetry/` | Consultar o registrar telemetría |
+| GET | `/api/plants/search/` | Catálogo inicial de especies botánicas |
 | GET | `/api/plants/search/?q=monstera` | Buscar especies botánicas |
 | GET | `/api/schema/` | Especificación OpenAPI |
 | GET | `/api/docs/` | Swagger UI |

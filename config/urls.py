@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django.conf import settings
+from django.views.static import serve
 from django.urls import path, include
+from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -13,8 +16,10 @@ from core.views import (
     GardenModuleViewSet,
     UserPlantViewSet,
     TelemetryLogViewSet,
+    TelemetryHistoryView,
     PlantSearchProxy,
 )
+from config.views import FrontendView
 
 router = DefaultRouter()
 router.register(r'modules', GardenModuleViewSet, basename='gardenmodule')
@@ -34,7 +39,27 @@ urlpatterns = [
 
     # Endpoint Proxy de Plantas (antes del router para evitar colisiones de rutas)
     path('api/plants/search/', PlantSearchProxy.as_view(), name='plant_search_proxy'),
+    path('api/telemetry/history/', TelemetryHistoryView.as_view(), name='telemetry_history'),
 
     # Rutas generadas por DefaultRouter bajo /api/
     path('api/', include(router.urls)),
+
+    # Aplicación React compilada; API y administración conservan sus rutas.
+    re_path(
+        r'^assets/(?P<path>.*)$',
+        serve,
+        {'document_root': settings.BASE_DIR.parent / 'Web-React' / 'dist' / 'assets'},
+    ),
+    re_path(
+        r'^(?P<path>SmartGarden\.png)$',
+        serve,
+        {'document_root': settings.BASE_DIR.parent / 'Web-React' / 'dist'},
+    ),
+    re_path(
+        r'^plants/(?P<path>.*)$',
+        serve,
+        {'document_root': settings.BASE_DIR.parent / 'Web-React' / 'public' / 'plants'},
+    ),
+    re_path(r'^(?!api/|admin/|static/|assets/).*$',
+            FrontendView.as_view(), name='frontend'),
 ]
