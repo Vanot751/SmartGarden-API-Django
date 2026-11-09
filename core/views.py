@@ -1,5 +1,6 @@
 import requests
 import math
+import unicodedata
 from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
@@ -740,6 +741,7 @@ class PlantSearchProxy(APIView):
 
     def get(self, request):
         query = request.query_params.get('q', '').strip()
+        normalized_query = self._normalize_search_text(query)
 
         if not query:
             return Response({
@@ -750,9 +752,12 @@ class PlantSearchProxy(APIView):
 
         catalog_matches = [
             item for item in CHILEAN_PLANT_CATALOG
-            if query.casefold() in item['common_name'].casefold()
-            or query.casefold() in item['scientific_name'].casefold()
-            or any(query.casefold() in alias.casefold() for alias in item.get('aliases', []))
+            if normalized_query in self._normalize_search_text(item['common_name'])
+            or normalized_query in self._normalize_search_text(item['scientific_name'])
+            or any(
+                normalized_query in self._normalize_search_text(alias)
+                for alias in item.get('aliases', [])
+            )
         ]
         if catalog_matches:
             return Response({
@@ -811,6 +816,14 @@ class PlantSearchProxy(APIView):
                 },
                 status=status.HTTP_502_BAD_GATEWAY
             )
+
+    @staticmethod
+    def _normalize_search_text(value):
+        normalized = unicodedata.normalize('NFKD', str(value or ''))
+        return ''.join(
+            character for character in normalized
+            if not unicodedata.combining(character)
+        ).casefold().strip()
 
     @staticmethod
     def _normalize_catalog(items):
