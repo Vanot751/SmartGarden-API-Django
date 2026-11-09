@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.views.static import serve
 from django.urls import path, include
+from django.views.generic import RedirectView
 from django.urls import re_path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
@@ -28,6 +29,7 @@ router.register(r'telemetry', TelemetryLogViewSet, basename='telemetrylog')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(url='/admin/', permanent=False)),
 
     # Endpoints de Autenticación JWT
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
