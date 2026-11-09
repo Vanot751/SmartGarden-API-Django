@@ -45,7 +45,7 @@ Instalar dependencias:
 pip install -r requirements.txt
 ```
 
-Crear un archivo `.env` en la raíz:
+Crear un archivo `.env` en la raízz:
 
 ```env
 DJANGO_SECRET_KEY=cambia-esta-clave-en-produccion
