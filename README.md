@@ -223,7 +223,7 @@ contiene `manage.py`. Vercel usa `config/wsgi.py` como una Function y ejecuta
    DATABASE_URL=postgresql://...
    PLANT_API_BASE_URL=https://perenual.com/api/species-list
    PLANT_API_KEY=<api-key>
-   CORS_ALLOWED_ORIGINS=https://<frontend>.vercel.app
+   CORS_ALLOWED_ORIGINS=https://smart-garden-web-react.vercel.app
    ```
 
    `DATABASE_URL` debe apuntar a PostgreSQL/Supabase. No se debe usar una base
