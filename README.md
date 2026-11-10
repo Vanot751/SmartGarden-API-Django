@@ -99,7 +99,7 @@ Usar el token de acceso en las peticiones protegidas:
 Authorization: Bearer <access-token>
 ```
 
-El token de acceso dura 60 minutos y el de renovación dura 7 días.
+El token de acceso dura 60 minutos y el de renovación dura 30 días.
 
 ## Endpoints principales
 
