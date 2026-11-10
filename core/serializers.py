@@ -1,5 +1,30 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from .models import GardenModule, UserPlant, TelemetryLog
+
+User = get_user_model()
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'password2')
+        extra_kwargs = {'email': {'required': False, 'allow_blank': True}}
+
+    def validate(self, attrs):
+        password2 = attrs.pop('password2', None)
+        if password2 is not None and attrs['password'] != password2:
+            raise serializers.ValidationError(
+                {'password2': 'Las contraseñas no coinciden.'}
+            )
+        return attrs
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
 
 
 class TelemetryLogSerializer(serializers.ModelSerializer):
@@ -71,4 +96,3 @@ class GardenModuleSerializer(serializers.ModelSerializer):
         model = GardenModule
         fields = ('id', 'user', 'mac_address', 'nombre', 'plant', 'created_at')
         read_only_fields = ('id', 'user', 'plant', 'created_at')
-

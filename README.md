@@ -79,7 +79,7 @@ Todos los endpoints de la API, excepto los recursos administrativos de Django,
 requieren un token JWT. Obtener tokens:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/auth/login/ ^
+curl -X POST http://127.0.0.1:8000/api/token/ ^
   -H "Content-Type: application/json" ^
   -d "{\"username\":\"admin\",\"password\":\"tu-contraseña\"}"
 ```
@@ -105,8 +105,9 @@ El token de acceso dura 60 minutos y el de renovación dura 7 días.
 
 | Método | Endpoint | Descripción |
 |---|---|---|
-| POST | `/api/auth/login/` | Obtener tokens JWT |
-| POST | `/api/auth/refresh/` | Renovar el token de acceso |
+| POST | `/api/token/` | Obtener tokens JWT |
+| POST | `/api/token/refresh/` | Renovar el token de acceso |
+| POST | `/api/auth/register/` | Registrar usuario y obtener tokens JWT |
 | GET/POST | `/api/modules/` | Listar o crear módulos propios |
 | GET/PATCH/DELETE | `/api/modules/<id>/` | Consultar o modificar un módulo propio |
 | POST | `/api/modules/<id>/telemetry/` | Registrar una lectura para un módulo |
@@ -121,6 +122,10 @@ El token de acceso dura 60 minutos y el de renovación dura 7 días.
 
 Cada usuario solo puede acceder a sus propios módulos, plantas y registros de
 telemetría.
+
+Las rutas `/api/auth/login/` y `/api/auth/refresh/` se mantienen como alias
+compatibles para clientes existentes. Los nuevos clientes deben usar
+`/api/token/` y `/api/token/refresh/`.
 
 ## Ejemplos de uso
 
@@ -219,7 +224,7 @@ contiene `manage.py`. Vercel usa `config/wsgi.py` como una Function y ejecuta
    ```text
    DJANGO_SECRET_KEY=<clave-secreta-larga-y-aleatoria>
    DJANGO_DEBUG=False
-   DJANGO_ALLOWED_HOSTS=<proyecto>.vercel.app
+   DJANGO_ALLOWED_HOSTS=smart-garden-api-django.vercel.app
    DATABASE_URL=postgresql://...
    PLANT_API_BASE_URL=https://perenual.com/api/species-list
    PLANT_API_KEY=<api-key>
@@ -249,9 +254,17 @@ También se pueden ejecutar desde una máquina con acceso a la misma
 Después del despliegue, comprobar:
 
 ```text
-https://<proyecto>.vercel.app/api/docs/
-https://<proyecto>.vercel.app/admin/
+https://smart-garden-api-django.vercel.app/api/docs/
+https://smart-garden-api-django.vercel.app/admin/
 ```
 
-La aplicación Android debe usar la URL pública incluyendo `/api`, por ejemplo:
-`https://<proyecto>.vercel.app/api`.
+URLs públicas:
+
+```text
+Backend:  https://smart-garden-api-django.vercel.app/
+Frontend: https://smart-garden-web-react.vercel.app/
+```
+
+La aplicación web y Android deben usar la URL pública del backend incluyendo
+`/api`:
+`https://smart-garden-api-django.vercel.app/api`.

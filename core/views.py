@@ -8,7 +8,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import GardenModule, UserPlant, TelemetryLog
@@ -16,8 +17,30 @@ from .serializers import (
     GardenModuleSerializer,
     UserPlantSerializer,
     TelemetryLogSerializer,
+    RegisterSerializer,
 )
 from .filters import TelemetryLogFilter
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                },
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 CHILEAN_PLANT_CATALOG = [
