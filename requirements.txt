@@ -24,3 +24,5 @@ sqlparse==0.6.1
 tzdata==2026.6
 uritemplate==4.2.0
 urllib3==2.8.0
+groq>=1.7.0
+

@@ -1,3 +1,4 @@
+import os
 import requests
 import math
 import unicodedata
@@ -874,3 +875,113 @@ class PlantSearchProxy(APIView):
             }
             for item in items
         ]
+
+
+FLORABOT_SYSTEM_PROMPT = """Eres FloraBot, el asistente agrónomo experto e inteligente del ecosistema SmartGarden.
+Tu misión es orientar y asesorar a los usuarios en el cuidado óptimo de sus plantas, jardines y huertos domésticos.
+
+Reglas de comportamiento y estilo:
+1. Responde siempre en español con un tono cálido, empático, profesional y pedagógico.
+2. Utiliza formato Markdown elegante y legible: usa negritas para conceptos clave, listas con viñetas o números para pasos de acción, y párrafos breves.
+3. Si el usuario te consulta por problemas o síntomas (hojas amarillas, marchitas, manchas marrones, puntas quemadas, plagas como pulgones o cochinillas), entrega un diagnóstico diferencial claro y pasos de recuperación inmediatos, priorizando métodos orgánicos y sustentables.
+4. Si se te provee el contexto de la planta del usuario (especie, temperatura actual, humedad de suelo, nivel de luz), analiza esos datos específicos para emitir recomendaciones altamente precisas y personalizadas.
+5. Evita tecnicismos innecesarios o nombres de librerías de software. Habla siempre desde la perspectiva agronómica y botánica práctica.
+6. Sé conciso pero exhaustivo en la solución.
+7. Presentación visual compacta: Al comparar parámetros de sensores (temperatura, humedad, luz), utiliza viñetas destacadas o una tabla compacta de máximo 3 columnas (| Parámetro | Medición | Estado |). Evita tablas de 4 o más columnas con párrafos extensos en las celdas para mantener una lectura limpia en el panel de chat.
+"""
+
+
+class ChatbotAPIView(APIView):
+    """
+    Endpoint para FloraBot: Asistente Botánico Inteligente basado en Groq LLM.
+    Permite responder dudas sobre cultivo, riego, diagnósticos de plagas y cuidado vegetal,
+    aprovechando opcionalmente la telemetría en vivo de la planta monitoreada.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        try:
+            from groq import Groq
+        except ImportError:
+            return Response(
+                {'error': 'La biblioteca groq no está instalada en el entorno del servidor.', 'status': 'error'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            return Response(
+                {'error': 'GROQ_API_KEY no está configurada en las variables de entorno.', 'status': 'error'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        user_message = request.data.get('message', '').strip()
+        if not user_message:
+            return Response(
+                {'error': 'No se proporcionó ningún mensaje.', 'status': 'error'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        history = request.data.get('history', [])
+        plant_context = request.data.get('plant_context')
+
+        # Construir el prompt de sistema enriquecido con telemetría/planta si está disponible
+        system_content = FLORABOT_SYSTEM_PROMPT
+        if plant_context and isinstance(plant_context, dict):
+            context_lines = ["\n[Contexto actual del usuario en SmartGarden]:"]
+            if plant_context.get('name'):
+                context_lines.append(f"- Planta: {plant_context.get('name')}")
+            if plant_context.get('scientific_name'):
+                context_lines.append(f"- Especie científica: {plant_context.get('scientific_name')}")
+            if plant_context.get('soil_moisture') is not None:
+                context_lines.append(f"- Humedad de suelo actual: {plant_context.get('soil_moisture')}%")
+            if plant_context.get('temperature') is not None:
+                context_lines.append(f"- Temperatura ambiental actual: {plant_context.get('temperature')}°C")
+            if plant_context.get('humidity') is not None:
+                context_lines.append(f"- Humedad ambiental: {plant_context.get('humidity')}%")
+            if plant_context.get('light_lux') is not None:
+                context_lines.append(f"- Iluminación: {plant_context.get('light_lux')}%")
+            if plant_context.get('temp_min') is not None and plant_context.get('temp_max') is not None:
+                context_lines.append(f"- Rango térmico seguro: {plant_context.get('temp_min')}°C a {plant_context.get('temp_max')}°C")
+            if plant_context.get('humedad_min') is not None:
+                context_lines.append(f"- Humedad mínima del sustrato recomendada: {plant_context.get('humedad_min')}%")
+            context_lines.append("\nINSTRUCCIÓN CRÍTICA: El usuario tiene en pantalla su maceta y los sensores de telemetría IoT en tiempo real. Cuando consulte '¿cómo está mi planta?', 'estado de mi planta' o dudas similares, diagnostica DIRECTAMENTE su condición actual usando estos valores reales y compáralos con las necesidades óptimas de la especie, sin pedirle que te vuelva a dar los datos.")
+            system_content += "\n".join(context_lines)
+
+
+        messages = [{"role": "system", "content": system_content}]
+
+        # Incluir historial previo de conversación para dar memoria a la sesión (máx últimos 6 mensajes)
+        if isinstance(history, list):
+            for turn in history[-6:]:
+                role = turn.get('role')
+                content = turn.get('content')
+                if role in ('user', 'assistant') and content:
+                    messages.append({"role": role, "content": str(content)[:1000]})
+
+        # Mensaje actual del usuario
+        messages.append({"role": "user", "content": user_message})
+
+        try:
+            client = Groq(api_key=api_key)
+            completion = client.chat.completions.create(
+                model="openai/gpt-oss-120b",
+                messages=messages,
+                temperature=0.7,
+                max_completion_tokens=2048,
+                top_p=0.9,
+                stream=False
+            )
+            response_text = completion.choices[0].message.content
+
+            return Response({
+                'response': response_text,
+                'status': 'success'
+            }, status=status.HTTP_200_OK)
+
+        except Exception as groq_err:
+            return Response({
+                'error': f'Error en el servicio de inferencia: {str(groq_err)}',
+                'status': 'error'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

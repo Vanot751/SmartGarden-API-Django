@@ -20,6 +20,7 @@ from core.views import (
     TelemetryHistoryView,
     PlantSearchProxy,
     RegisterView,
+    ChatbotAPIView,
 )
 from config.views import FrontendView
 
@@ -47,6 +48,7 @@ urlpatterns = [
     # Endpoint Proxy de Plantas (antes del router para evitar colisiones de rutas)
     path('api/plants/search/', PlantSearchProxy.as_view(), name='plant_search_proxy'),
     path('api/telemetry/history/', TelemetryHistoryView.as_view(), name='telemetry_history'),
+    path('api/chat/', ChatbotAPIView.as_view(), name='chatbot_api'),
 
     # Rutas generadas por DefaultRouter bajo /api/
     path('api/', include(router.urls)),
