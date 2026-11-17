@@ -898,6 +898,7 @@ class ChatbotAPIView(APIView):
     aprovechando opcionalmente la telemetría en vivo de la planta monitoreada.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         try:
