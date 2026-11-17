@@ -909,7 +909,7 @@ class ChatbotAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY") or getattr(settings, 'GROQ_API_KEY', None)
         if not api_key:
             return Response(
                 {'error': 'GROQ_API_KEY no está configurada en las variables de entorno.', 'status': 'error'},

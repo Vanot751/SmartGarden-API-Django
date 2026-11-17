@@ -156,6 +156,7 @@ CORS_ALLOW_CREDENTIALS = True
 # ==========================================
 PLANT_API_BASE_URL = os.environ.get('PLANT_API_BASE_URL', 'https://perenual.com/api/species-list')
 PLANT_API_KEY = os.environ.get('PLANT_API_KEY', 'TU_API_KEY_SECRETA_AQUI')
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
 # Validadores de contraseña e Internacionalización
 AUTH_PASSWORD_VALIDATORS = [
