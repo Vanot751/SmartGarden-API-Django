@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <title>{{ title|default:"SmartGarden • Documentación API" }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if favicon_href %}<link rel="icon" href="{{ favicon_href }}">{% endif %}
+    <link rel="stylesheet" href="{{ swagger_ui_css }}">
+    <style>
+      html { box-sizing: border-box; overflow-y: scroll; }
+      *, *:after, *:before { box-sizing: inherit; }
+      body { background: #fafafa; margin: 0; }
+
+      /* SmartGarden Theming para Swagger UI */
+      .swagger-ui .topbar {
+        background-color: #121212 !important;
+        border-bottom: 2px solid #2ECC71 !important;
+        padding: 10px 0 !important;
+      }
+      .swagger-ui .topbar-wrapper a {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+      }
+      .swagger-ui .topbar-wrapper img {
+        content: url('/static/admin/img/SmartGarden.png') !important;
+        height: 34px !important;
+        width: 34px !important;
+        border-radius: 6px !important;
+      }
+      .swagger-ui .topbar-wrapper span {
+        color: #2ECC71 !important;
+        font-weight: 700 !important;
+        font-size: 1.15rem !important;
+      }
+      .swagger-ui .btn.authorize {
+        background-color: #2ECC71 !important;
+        color: #08170E !important;
+        border-color: #2ECC71 !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
+      }
+      .swagger-ui .btn.authorize svg {
+        fill: #08170E !important;
+      }
+      .swagger-ui .btn.authorize:hover {
+        background-color: #27AE60 !important;
+        color: #FFFFFF !important;
+      }
+      .swagger-ui .btn.authorize:hover svg {
+        fill: #FFFFFF !important;
+      }
+      .swagger-ui .opblock.opblock-post {
+        border-color: #2ECC71 !important;
+        background: rgba(46, 204, 113, .05) !important;
+      }
+      .swagger-ui .opblock.opblock-post .opblock-summary-method {
+        background: #27AE60 !important;
+      }
+    </style>
+    {% endblock head %}
+  </head>
+  <body>
+    {% block body %}
+    <div id="swagger-ui"></div>
+    <script src="{{ swagger_ui_bundle }}"></script>
+    <script src="{{ swagger_ui_standalone }}"></script>
+    {% if script_url %}
+    <script src="{{ script_url }}"></script>
+    {% else %}
+    <script>
+    {% include template_name_js %}
+    </script>
+    {% endif %}
+    {% endblock %}
+  </body>
+</html>

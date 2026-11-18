@@ -29,6 +29,12 @@ router.register(r'modules', GardenModuleViewSet, basename='gardenmodule')
 router.register(r'user-plants', UserPlantViewSet, basename='userplant')
 router.register(r'telemetry', TelemetryLogViewSet, basename='telemetrylog')
 
+# Personalización institucional del Panel de Administración Django
+admin.site.site_header = "SmartGarden"
+admin.site.site_title = "SmartGarden • Administración IoT"
+admin.site.index_title = "Panel de Supervisión Botánica & IoT"
+admin.site.site_url = "https://smart-garden-web-react.vercel.app"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/admin/', permanent=False)),

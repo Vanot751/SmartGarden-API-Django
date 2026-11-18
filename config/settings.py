@@ -60,6 +60,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            BASE_DIR / 'templates',
             BASE_DIR.parent / 'Web-React' / 'public',
             BASE_DIR.parent / 'Web-React' / 'dist',
         ],
@@ -114,6 +115,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
     'SECURITY': [{'jwtAuth': []}],
+    'SWAGGER_UI_FAVICON_HREF': '/static/admin/img/SmartGarden.png',
     'APPEND_COMPONENTS': {
         'securitySchemes': {
             'jwtAuth': {
@@ -173,6 +175,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 FRONTEND_DIST = BASE_DIR.parent / 'Web-React' / 'dist'
-STATICFILES_DIRS = [FRONTEND_DIST] if FRONTEND_DIST.exists() else []
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+if FRONTEND_DIST.exists():
+    STATICFILES_DIRS.append(FRONTEND_DIST)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

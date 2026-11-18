@@ -1,0 +1,244 @@
+/* ==========================================================================
+   SmartGarden • Paleta Institucional para Panel Django Admin
+   Colores: Esmeralda (#2ECC71), Verde Acento (#27AE60), OLED Oscuro (#121212)
+   ========================================================================== */
+
+/* 1. Variables CSS Globales para Temas Claro y Oscuro */
+:root,
+html[data-theme="light"] {
+    --primary: #27AE60;
+    --secondary: #1E3A2F;
+    --accent: #2ECC71;
+    --primary-fg: #FFFFFF;
+
+    --header-bg: #121212;
+    --header-color: #FFFFFF;
+    --header-branding-color: #2ECC71;
+    --header-link-color: #E2E8F0;
+
+    --breadcrumbs-bg: #181818;
+    --breadcrumbs-fg: #A1A1AA;
+    --breadcrumbs-link-fg: #2ECC71;
+
+    --link-fg: #27AE60;
+    --link-hover-color: #1E8449;
+    --link-selected-fg: #2ECC71;
+
+    --button-bg: #27AE60;
+    --button-fg: #FFFFFF;
+    --button-hover-bg: #2ECC71;
+    --default-button-bg: #2ECC71;
+    --default-button-hover-bg: #27AE60;
+
+    --selected-bg: rgba(46, 204, 113, 0.12);
+    --selected-row: rgba(46, 204, 113, 0.15);
+    --message-success-bg: rgba(46, 204, 113, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #1E3A2F;
+        --primary-fg: #F3F4F6;
+        --secondary: #14241D;
+        --accent: #2ECC71;
+
+        --body-bg: #121212;
+        --body-fg: #E5E7EB;
+        --body-quiet-color: #9CA3AF;
+        --body-medium-color: #D1D5DB;
+        --body-loud-color: #FFFFFF;
+
+        --header-bg: #101010;
+        --header-color: #FFFFFF;
+        --header-branding-color: #2ECC71;
+        --header-link-color: #E5E7EB;
+
+        --breadcrumbs-bg: #161616;
+        --breadcrumbs-fg: #9CA3AF;
+        --breadcrumbs-link-fg: #2ECC71;
+
+        --link-fg: #2ECC71;
+        --link-hover-color: #58D68D;
+        --link-selected-fg: #2ECC71;
+
+        --hairline-color: #262626;
+        --border-color: #2E3A33;
+
+        --darkened-bg: #181818;
+        --selected-bg: #1B2B22;
+        --selected-row: rgba(46, 204, 113, 0.18);
+
+        --button-bg: #1E3A2F;
+        --button-fg: #FFFFFF;
+        --button-hover-bg: #27AE60;
+        --default-button-bg: #2ECC71;
+        --default-button-hover-bg: #27AE60;
+
+        --message-success-bg: #0D381E;
+    }
+}
+
+html[data-theme="dark"] {
+    --primary: #1E3A2F;
+    --primary-fg: #F3F4F6;
+    --secondary: #14241D;
+    --accent: #2ECC71;
+
+    --body-bg: #121212;
+    --body-fg: #E5E7EB;
+    --body-quiet-color: #9CA3AF;
+    --body-medium-color: #D1D5DB;
+    --body-loud-color: #FFFFFF;
+
+    --header-bg: #101010;
+    --header-color: #FFFFFF;
+    --header-branding-color: #2ECC71;
+    --header-link-color: #E5E7EB;
+
+    --breadcrumbs-bg: #161616;
+    --breadcrumbs-fg: #9CA3AF;
+    --breadcrumbs-link-fg: #2ECC71;
+
+    --link-fg: #2ECC71;
+    --link-hover-color: #58D68D;
+    --link-selected-fg: #2ECC71;
+
+    --hairline-color: #262626;
+    --border-color: #2E3A33;
+
+    --darkened-bg: #181818;
+    --selected-bg: #1B2B22;
+    --selected-row: rgba(46, 204, 113, 0.18);
+
+    --button-bg: #1E3A2F;
+    --button-fg: #FFFFFF;
+    --button-hover-bg: #27AE60;
+    --default-button-bg: #2ECC71;
+    --default-button-hover-bg: #27AE60;
+
+    --message-success-bg: #0D381E;
+}
+
+/* 2. Encabezado Principal y Marca */
+#header {
+    background: var(--header-bg);
+    border-bottom: 2px solid #2ECC71;
+}
+
+.smartgarden-brand-header {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
+}
+
+.smartgarden-brand-img {
+    height: 32px;
+    width: 32px;
+    object-fit: contain;
+    border-radius: 6px;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.smartgarden-brand-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+    color: #2ECC71 !important;
+}
+
+.smartgarden-brand-badge {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: #9CA3AF;
+    margin-left: 2px;
+    opacity: 0.9;
+}
+
+/* 3. Botones y Acciones */
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+    background: #2ECC71 !important;
+    color: #08170E !important;
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.button.default:hover,
+input[type=submit].default:hover,
+.submit-row input.default:hover {
+    background: #27AE60 !important;
+    color: #FFFFFF !important;
+}
+
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input {
+    border-radius: 4px;
+}
+
+/* 4. Enlaces, Filtros y Paginación */
+a:link,
+a:visited {
+    color: var(--link-fg);
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
+#changelist-filter h2 {
+    background: var(--primary);
+    color: var(--primary-fg);
+}
+
+#changelist-filter li.selected a {
+    color: #2ECC71 !important;
+    font-weight: bold;
+}
+
+/* 5. Tablas y Módulos */
+.module h2,
+.module caption,
+.inline-group h2 {
+    border-bottom: 1px solid rgba(46, 204, 113, 0.4);
+}
+
+/* 6. Formularios y Controles de Entrada */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #2ECC71 !important;
+    outline: 1px solid #2ECC71 !important;
+    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2) !important;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    accent-color: #2ECC71;
+}
+
+/* 7. Barra lateral de Navegación */
+#nav-sidebar .current-app .section:before,
+#nav-sidebar .current-model:before {
+    background: #2ECC71 !important;
+}
+
+/* 8. Pantalla de Inicio de Sesión */
+.login #container {
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(46, 204, 113, 0.2);
+}
+
+.login #header {
+    background: #121212;
+    border-bottom: 2px solid #2ECC71;
+}
