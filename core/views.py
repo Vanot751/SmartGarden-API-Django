@@ -520,7 +520,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-ciruelo-pissard', 'common_name': 'Ciruelo de Pissard',
         'scientific_name': "Prunus cerasifera 'Pissardii'", 'aliases': ['pissardii', 'ciruelo rojo'],
         'family': 'Rosaceae', 'watering': 'Moderado', 'sunlight': ['Sol pleno'],
-        'thumbnail': '/plants/olivo.jpg', 'temp_min': -5, 'temp_max': 32,
+        'thumbnail': '/plants/ciruelo.jpg', 'temp_min': -5, 'temp_max': 32,
         'humidity_min': 35, 'watering_ml': 220,
         'description': 'Árbol urbano de hoja morada, ornamental y de sol directo.'
     },
