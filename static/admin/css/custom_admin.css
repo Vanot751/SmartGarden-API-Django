@@ -242,3 +242,33 @@ input[type="radio"]:checked {
     background: #121212;
     border-bottom: 2px solid #2ECC71;
 }
+
+/* 9. Pie de Página Institucional */
+.smartgarden-admin-footer {
+    padding: 22px 20px 28px 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--body-quiet-color);
+    border-top: 1px solid var(--hairline-color);
+    background: var(--header-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.smartgarden-admin-footer-top {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--header-link-color);
+}
+
+.smartgarden-admin-footer-bottom {
+    font-size: 0.76rem;
+    color: #888888;
+}
+
+.smartgarden-admin-footer-bottom strong {
+    color: var(--header-link-color);
+}
