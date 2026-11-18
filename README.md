@@ -12,6 +12,7 @@ aislamiento multiusuario.
 - Filtros de telemetría por módulo y rango de fechas.
 - Catálogo inicial de plantas comunes en Chile con imágenes y parámetros recomendados.
 - Búsqueda de especies mediante un proxy seguro hacia la API botánica externa.
+- **FloraBot IA**: Asistente agronómico inteligente con Groq LLM e inyección de telemetría en tiempo real.
 - Documentación interactiva con OpenAPI y Swagger UI.
 - Simulador de lecturas IoT incluido en `iot_simulator.py`.
 
@@ -20,6 +21,7 @@ aislamiento multiusuario.
 - Python 3.12 o superior.
 - PostgreSQL o Supabase.
 - Una API key de la API de plantas configurada en `PLANT_API_KEY`.
+- Una API key de Groq configurada en `GROQ_API_KEY` para el asistente botánico FloraBot.
 
 ## Instalación
 
@@ -116,6 +118,7 @@ El token de acceso dura 60 minutos y el de renovación dura 30 días.
 | GET/POST | `/api/telemetry/` | Consultar o registrar telemetría |
 | GET | `/api/plants/search/` | Catálogo inicial de especies botánicas |
 | GET | `/api/plants/search/?q=monstera` | Buscar especies botánicas |
+| POST | `/api/chat/` | Asistente agronómico inteligente FloraBot (Groq LLM) |
 | GET | `/api/schema/` | Especificación OpenAPI |
 | GET | `/api/docs/` | Swagger UI |
 | GET | `/admin/` | Panel administrativo de Django |
@@ -164,6 +167,14 @@ Filtrar telemetría:
 
 ```text
 GET /api/telemetry/?module=1&start_date=2026-11-01T00:00:00Z&end_date=2026-11-05T23:59:59Z
+```
+
+Consultar al asistente botánico FloraBot (IA):
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/chat/ ^
+  -H "Content-Type: application/json" ^
+  -d "{\"message\":\"¿Cómo está mi planta?\",\"plant_context\":{\"name\":\"Monstera Deliciosa\",\"temperature\":24.5,\"soil_moisture\":52,\"light_lux\":78}}"
 ```
 
 Los resultados se entregan paginados, con un máximo de 50 registros por página.
