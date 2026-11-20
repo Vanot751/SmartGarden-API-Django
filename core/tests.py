@@ -7,6 +7,7 @@ from unittest.mock import patch
 from .views import (
     PLANT_IMAGE_CACHE,
     LOCAL_PLANT_PLACEHOLDER,
+    SPANISH_PLANT_SEARCH_ALIASES,
     normalizeScientificName,
     resolvePlantImage,
 )
@@ -62,6 +63,12 @@ class PlantImageResolverTests(SimpleTestCase):
         self.assertEqual(
             normalizeScientificName('Magnolia × soulangeana'),
             'Magnolia soulangeana',
+        )
+
+    def test_manzanilla_has_english_search_aliases(self):
+        self.assertIn(
+            'chamomile',
+            SPANISH_PLANT_SEARCH_ALIASES['manzanilla'],
         )
 
     @patch('core.views.requests.get')

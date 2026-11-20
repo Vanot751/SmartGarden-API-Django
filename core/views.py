@@ -27,6 +27,11 @@ from .filters import TelemetryLogFilter
 
 PLANT_IMAGE_CACHE = {}
 LOCAL_PLANT_PLACEHOLDER = '/plants/herb.svg'
+SPANISH_PLANT_SEARCH_ALIASES = {
+    'manzanilla': ['chamomile', 'Matricaria chamomilla'],
+    'camomila': ['chamomile', 'Matricaria chamomilla'],
+    'copihue': ['lapageria rosea'],
+}
 
 
 def normalizeScientificName(scientific_name):
@@ -871,16 +876,33 @@ class PlantSearchProxy(APIView):
 
         try:
             # Petición segura de servidor a servidor inyectando la API Key desde settings.py
-            external_response = requests.get(
-                settings.PLANT_API_BASE_URL,
-                params={
-                    'key': settings.PLANT_API_KEY,
-                    'q': query,
-                },
-                timeout=10
+            search_queries = [query]
+            normalized_alias = self._normalize_search_text(query)
+            search_queries.extend(
+                alias
+                for alias in SPANISH_PLANT_SEARCH_ALIASES.get(normalized_alias, [])
+                if alias.casefold() != normalized_alias
             )
-            external_response.raise_for_status()
-            raw_data = external_response.json()
+
+            raw_data = {}
+            for search_query in search_queries:
+                external_response = requests.get(
+                    settings.PLANT_API_BASE_URL,
+                    params={
+                        'key': settings.PLANT_API_KEY,
+                        'q': search_query,
+                    },
+                    timeout=10
+                )
+                external_response.raise_for_status()
+                candidate_data = external_response.json()
+                candidate_items = candidate_data.get(
+                    'data',
+                    candidate_data if isinstance(candidate_data, list) else [],
+                )
+                if candidate_items:
+                    raw_data = candidate_data
+                    break
 
             # Normalización/limpieza del payload para el frontend
             raw_items = raw_data.get('data', raw_data if isinstance(raw_data, list) else [])
