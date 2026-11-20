@@ -133,6 +133,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-limonero',
         'common_name': 'Limonero en maceta',
         'scientific_name': 'Citrus limon',
+        'scientific_names': ['Citrus limon', 'Citrus medica var. limon', 'Citrus × limon'],
         'family': 'Rutaceae',
         'watering': 'Moderado',
         'sunlight': ['Sol directo'],
@@ -147,6 +148,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-naranjo',
         'common_name': 'Naranjo en maceta',
         'scientific_name': 'Citrus sinensis',
+        'scientific_names': ['Citrus sinensis', 'Citrus × aurantium var. sinensis'],
         'family': 'Rutaceae',
         'watering': 'Moderado',
         'sunlight': ['Sol directo', 'Luz brillante'],
@@ -161,6 +163,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-mandarino',
         'common_name': 'Mandarino en maceta',
         'scientific_name': 'Citrus reticulata',
+        'scientific_names': ['Citrus reticulata', 'Citrus nobilis var. deliciosa'],
         'family': 'Rutaceae',
         'watering': 'Moderado',
         'sunlight': ['Sol directo', 'Luz brillante'],
@@ -175,6 +178,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-palto',
         'common_name': 'Palto en maceta',
         'scientific_name': 'Persea americana',
+        'scientific_names': ['Persea americana', 'Persea gratissima'],
         'family': 'Lauraceae',
         'watering': 'Moderado',
         'sunlight': ['Sol directo protegido'],
@@ -189,6 +193,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-higuera',
         'common_name': 'Higuera en maceta',
         'scientific_name': 'Ficus carica',
+        'scientific_names': ['Ficus carica', 'Ficus communis'],
         'family': 'Moraceae',
         'watering': 'Moderado',
         'sunlight': ['Sol directo'],
@@ -203,6 +208,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-olivo',
         'common_name': 'Olivo en maceta',
         'scientific_name': 'Olea europaea',
+        'scientific_names': ['Olea europaea', 'Olea lancifolia'],
         'family': 'Oleaceae',
         'watering': 'Bajo',
         'sunlight': ['Sol directo'],
@@ -217,6 +223,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-granado',
         'common_name': 'Granado en maceta',
         'scientific_name': 'Punica granatum',
+        'scientific_names': ['Punica granatum', 'Granata punicum'],
         'family': 'Lythraceae',
         'watering': 'Bajo',
         'sunlight': ['Sol directo'],
@@ -327,6 +334,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-romero',
         'common_name': 'Romero',
         'scientific_name': 'Salvia rosmarinus',
+        'scientific_names': ['Salvia rosmarinus', 'Rosmarinus officinalis'],
         'family': 'Lamiaceae',
         'watering': 'Bajo',
         'sunlight': ['Sol directo'],
@@ -338,6 +346,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-menta',
         'common_name': 'Menta o hierbabuena',
         'scientific_name': 'Mentha spicata',
+        'scientific_names': ['Mentha spicata', 'Mentha viridis', 'Mentha crispa'],
         'family': 'Lamiaceae',
         'watering': 'Frecuente',
         'sunlight': ['Semisombra luminosa'],
@@ -349,6 +358,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-oregano',
         'common_name': 'Orégano',
         'scientific_name': 'Origanum vulgare',
+        'scientific_names': ['Origanum vulgare', 'Origanum creticum'],
         'family': 'Lamiaceae',
         'watering': 'Bajo',
         'sunlight': ['Sol directo'],
@@ -371,6 +381,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-perejil',
         'common_name': 'Perejil',
         'scientific_name': 'Petroselinum crispum',
+        'scientific_names': ['Petroselinum crispum', 'Apium petroselinum', 'Petroselinum sativum'],
         'family': 'Apiaceae',
         'watering': 'Moderado',
         'sunlight': ['Sol moderado', 'Semisombra'],
@@ -382,6 +393,7 @@ CHILEAN_PLANT_CATALOG = [
         'api_species_id': 'smartgarden-lavanda-francesa',
         'common_name': 'Lavanda francesa',
         'scientific_name': 'Lavandula dentata',
+        'scientific_names': ['Lavandula dentata', 'Lavandula stoechas', 'Lavandula officinalis'],
         'family': 'Lamiaceae',
         'watering': 'Bajo',
         'sunlight': ['Sol directo'],
@@ -618,7 +630,9 @@ CHILEAN_PLANT_CATALOG = [
     },
     {
         'api_species_id': 'smartgarden-arrayan', 'common_name': 'Arrayán',
-        'scientific_name': 'Luma apiculata', 'aliases': ['arrayan', 'arrayán'],
+        'scientific_name': 'Luma apiculata',
+        'scientific_names': ['Luma apiculata', 'Myrceugenia apiculata', 'Myrtus luma'],
+        'aliases': ['arrayan', 'arrayán'],
         'family': 'Myrtaceae', 'watering': 'Moderado', 'sunlight': ['Semisombra'],
         'thumbnail': '/plants/olivo.jpg', 'temp_min': 2, 'temp_max': 28,
         'humidity_min': 50, 'watering_ml': 240,
@@ -634,7 +648,9 @@ CHILEAN_PLANT_CATALOG = [
     },
     {
         'api_species_id': 'smartgarden-palma-chilena', 'common_name': 'Palma Chilena',
-        'scientific_name': 'Jubaea chilensis', 'aliases': ['palma chilena', 'jubaea'],
+        'scientific_name': 'Jubaea chilensis',
+        'scientific_names': ['Jubaea chilensis', 'Molinaea chilensis'],
+        'aliases': ['palma chilena', 'jubaea'],
         'family': 'Arecaceae', 'watering': 'Bajo', 'sunlight': ['Sol pleno'],
         'thumbnail': '/plants/olivo.jpg', 'temp_min': -3, 'temp_max': 35,
         'humidity_min': 20, 'watering_ml': 150,
@@ -643,7 +659,9 @@ CHILEAN_PLANT_CATALOG = [
     # Hierbas aromáticas y medicinales
     {
         'api_species_id': 'smartgarden-cedron', 'common_name': 'Cedrón',
-        'scientific_name': 'Aloysia citrodora', 'aliases': ['cedron', 'cedrón', 'hierba luisa'],
+        'scientific_name': 'Aloysia citrodora',
+        'scientific_names': ['Aloysia citrodora', 'Aloysia triphylla', 'Lippia citriodora'],
+        'aliases': ['cedron', 'cedrón', 'hierba luisa'],
         'family': 'Verbenaceae', 'watering': 'Moderado', 'sunlight': ['Sol pleno'],
         'thumbnail': '/plants/romero.jpg', 'temp_min': 5, 'temp_max': 32,
         'humidity_min': 35, 'watering_ml': 150,
@@ -651,7 +669,9 @@ CHILEAN_PLANT_CATALOG = [
     },
     {
         'api_species_id': 'smartgarden-ruda', 'common_name': 'Ruda',
-        'scientific_name': 'Ruta graveolens', 'aliases': ['ruda'],
+        'scientific_name': 'Ruta graveolens',
+        'scientific_names': ['Ruta graveolens', 'Ruta chalepensis'],
+        'aliases': ['ruda'],
         'family': 'Rutaceae', 'watering': 'Bajo', 'sunlight': ['Sol pleno'],
         'thumbnail': '/plants/romero.jpg', 'temp_min': 4, 'temp_max': 35,
         'humidity_min': 25, 'watering_ml': 100,
@@ -659,7 +679,9 @@ CHILEAN_PLANT_CATALOG = [
     },
     {
         'api_species_id': 'smartgarden-boldo', 'common_name': 'Boldo',
-        'scientific_name': 'Peumus boldus', 'aliases': ['boldo'],
+        'scientific_name': 'Peumus boldus',
+        'scientific_names': ['Peumus boldus', 'Boldu chilanum'],
+        'aliases': ['boldo'],
         'family': 'Monimiaceae', 'watering': 'Bajo', 'sunlight': ['Sol', 'Sombra'],
         'thumbnail': '/plants/romero.jpg', 'temp_min': 2, 'temp_max': 32,
         'humidity_min': 25, 'watering_ml': 160,
@@ -908,12 +930,19 @@ class PlantSearchProxy(APIView):
             raw_items = raw_data.get('data', raw_data if isinstance(raw_data, list) else [])
             cleaned_results = []
             for item in raw_items:
-                scientific_names = item.get('scientific_name')
-                scientific_name = None
-                if isinstance(scientific_names, list) and scientific_names:
-                    scientific_name = normalizeScientificName(scientific_names[0])
-                    if not scientific_name:
-                        scientific_name = None
+                raw_scientific = item.get('scientific_name')
+                scientific_names_list = []
+                if isinstance(raw_scientific, list):
+                    for sn in raw_scientific:
+                        cleaned = normalizeScientificName(sn)
+                        if cleaned and cleaned not in scientific_names_list:
+                            scientific_names_list.append(cleaned)
+                elif isinstance(raw_scientific, str) and raw_scientific.strip():
+                    cleaned = normalizeScientificName(raw_scientific)
+                    if cleaned and cleaned not in scientific_names_list:
+                        scientific_names_list.append(cleaned)
+
+                scientific_name = scientific_names_list[0] if scientific_names_list else None
 
                 default_image = item.get('default_image')
                 fallback_url = (
@@ -926,6 +955,7 @@ class PlantSearchProxy(APIView):
                     'api_species_id': str(item.get('id')),
                     'common_name': item.get('common_name'),
                     'scientific_name': scientific_name,
+                    'scientific_names': scientific_names_list,
                     'watering': item.get('watering'),
                     'sunlight': item.get('sunlight', []),
                     'thumbnail': resolvePlantImage(scientific_name, fallback_url),
@@ -957,11 +987,27 @@ class PlantSearchProxy(APIView):
 
     @staticmethod
     def _normalize_catalog(items):
-        return [
-            {
+        results = []
+        for item in items:
+            raw_s = item.get('scientific_name')
+            raw_list = item.get('scientific_names') or []
+            names = []
+            if isinstance(raw_list, list):
+                for s in raw_list:
+                    if isinstance(s, str) and s not in names:
+                        names.append(s)
+            if isinstance(raw_s, str) and raw_s not in names:
+                names.insert(0, raw_s)
+
+            for a in item.get('aliases', []):
+                if a not in names and ' ' in a:
+                    names.append(a)
+
+            results.append({
                 'api_species_id': item['api_species_id'],
                 'common_name': item['common_name'],
-                'scientific_name': item['scientific_name'],
+                'scientific_name': names[0] if names else item.get('scientific_name'),
+                'scientific_names': names if names else ([item.get('scientific_name')] if item.get('scientific_name') else []),
                 'family': item['family'],
                 'watering': item['watering'],
                 'sunlight': item['sunlight'],
@@ -972,9 +1018,8 @@ class PlantSearchProxy(APIView):
                 'watering_ml': item['watering_ml'],
                 'description': item['description'],
                 'aliases': item.get('aliases', []),
-            }
-            for item in items
-        ]
+            })
+        return results
 
 
 FLORABOT_SYSTEM_PROMPT = """Eres FloraBot, el asistente botánico y agrónomo inteligente del ecosistema SmartGarden.
