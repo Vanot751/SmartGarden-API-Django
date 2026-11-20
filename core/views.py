@@ -951,13 +951,26 @@ class PlantSearchProxy(APIView):
                     else None
                 )
 
+                # Sanitizar cualquier texto publicitario de planes de pago de Perenual o enlaces de suscripción
+                cleaned_sunlight = []
+                raw_sunlight = item.get('sunlight', [])
+                banned_terms = ['upgrade', 'premium', 'supreme', 'perenual', 'subscription', 'http', 'api-documentation']
+                if isinstance(raw_sunlight, list):
+                    for s in raw_sunlight:
+                        if isinstance(s, str) and not any(term in s.lower() for term in banned_terms):
+                            cleaned_sunlight.append(s)
+                elif isinstance(raw_sunlight, str) and not any(term in raw_sunlight.lower() for term in banned_terms):
+                    cleaned_sunlight.append(raw_sunlight)
+
+                if not cleaned_sunlight:
+                    cleaned_sunlight = ['Luz indirecta o filtrada']
+
                 cleaned_results.append({
                     'api_species_id': str(item.get('id')),
                     'common_name': item.get('common_name'),
                     'scientific_name': scientific_name,
                     'scientific_names': scientific_names_list,
-                    'watering': item.get('watering'),
-                    'sunlight': item.get('sunlight', []),
+                    'sunlight': cleaned_sunlight,
                     'thumbnail': resolvePlantImage(scientific_name, fallback_url),
                 })
 
@@ -1040,9 +1053,17 @@ Reglas obligatorias de comportamiento y estilo:
      * Entrega su **Nombre Científico** en cursiva (ej: *Peumus boldus*) y su **Nombre en Inglés** (ej: *Chilean boldo*).
      * Agrega una ficha compacta de 3 viñetas con sus requerimientos básicos: Riego (Bajo/Medio/Alto), Exposición solar y Rango térmico ideal.
      * Dile que con ese nombre científico puede buscarla directamente en el catálogo botánico de SmartGarden.
-5. Diagnóstico diferencial de plagas y síntomas:
+5. Asesor de condiciones óptimas de cultivo y maceta:
+   - Si el usuario te pregunta por las condiciones óptimas, luz, temperatura, humedad del suelo, riego o sustrato para cualquier especie botánica:
+     * Entrega una respuesta clara y estructurada con viñetas:
+       - ☀️ **Luz solar / Exposición**: Nivel recomendado (sol directo, semisombra, luz indirecta filtrada).
+       - 🌡️ **Rango de Temperatura Óptimo**: Mínima y máxima en °C.
+       - 💧 **Humedad del Suelo y Riego**: Porcentaje de humedad mínima recomendada (ej: 30%-40%) y pauta de riego (abundante, moderado o escaso).
+       - 🌱 **Sustrato y Drenaje**: Recomendación de tierra o mezcla para maceta.
+     * Señala que puede ajustar estos parámetros exactos en el panel de su maceta inteligente en SmartGarden.
+6. Diagnóstico diferencial de plagas y síntomas:
    - Si consultan por hojas amarillas, manchas o plagas, entrega causas posibles y pasos orgánicos inmediatos.
-6. Presentación visual compacta:
+7. Presentación visual compacta:
    - Sé conciso y utiliza viñetas o tablas de máximo 3 columnas para evitar saturar la lectura en dispositivos móviles.
 """
 
