@@ -157,7 +157,7 @@ CORS_ALLOW_CREDENTIALS = True
 # 6. CREDENCIALES DE API EXTERNA (Botánica)
 # ==========================================
 PLANT_API_BASE_URL = os.environ.get('PLANT_API_BASE_URL', 'https://perenual.com/api/species-list')
-PLANT_API_KEY = os.environ.get('PLANT_API_KEY', 'TU_API_KEY_SECRETA_AQUI')
+PLANT_API_KEY = os.environ.get('PLANT_API_KEY', '')
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
 # Validadores de contraseña e Internacionalización

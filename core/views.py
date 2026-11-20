@@ -1,7 +1,9 @@
 import os
 import requests
 import math
+import re
 import unicodedata
+from urllib.parse import quote
 from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
@@ -21,6 +23,83 @@ from .serializers import (
     RegisterSerializer,
 )
 from .filters import TelemetryLogFilter
+
+
+PLANT_IMAGE_CACHE = {}
+LOCAL_PLANT_PLACEHOLDER = '/plants/herb.svg'
+
+
+def normalizeScientificName(scientific_name):
+    if not isinstance(scientific_name, str):
+        return ''
+
+    normalized = scientific_name.strip()
+    normalized = re.sub(r"\s*['\u2018\u2019][^'\u2018\u2019]*['\u2018\u2019]", '', normalized)
+    normalized = re.sub(r'\s*[×]\s*', ' ', normalized)
+    normalized = re.sub(r'\s+[xX]\s+(?=[A-Za-z])', ' ', normalized)
+    return re.sub(r'\s+', ' ', normalized).strip()
+
+
+normalize_scientific_name = normalizeScientificName
+
+
+def resolvePlantImage(scientific_name, fallback_url):
+    cleaned_name = normalizeScientificName(scientific_name)
+    if cleaned_name in PLANT_IMAGE_CACHE:
+        return PLANT_IMAGE_CACHE[cleaned_name]
+
+    resolved_url = None
+
+    if cleaned_name:
+        try:
+            inaturalist_response = requests.get(
+                'https://api.inaturalist.org/v1/taxa',
+                params={'q': cleaned_name, 'per_page': 1},
+                timeout=10,
+            )
+            inaturalist_response.raise_for_status()
+            inaturalist_data = inaturalist_response.json()
+            results = inaturalist_data.get('results', [])
+            if isinstance(results, list) and results:
+                default_photo = results[0].get('default_photo')
+                if isinstance(default_photo, dict):
+                    medium_url = default_photo.get('medium_url')
+                    if isinstance(medium_url, str) and medium_url.strip():
+                        resolved_url = medium_url.strip()
+        except requests.exceptions.RequestException:
+            resolved_url = None
+
+    if not resolved_url and cleaned_name:
+        try:
+            wikipedia_name = quote(cleaned_name.replace(' ', '_'), safe='')
+            wikipedia_response = requests.get(
+                f'https://en.wikipedia.org/api/rest_v1/page/summary/{wikipedia_name}',
+                timeout=10,
+            )
+            wikipedia_response.raise_for_status()
+            wikipedia_data = wikipedia_response.json()
+            thumbnail = wikipedia_data.get('thumbnail')
+            if isinstance(thumbnail, dict):
+                source = thumbnail.get('source')
+                if isinstance(source, str) and source.strip():
+                    resolved_url = source.strip()
+        except requests.exceptions.RequestException:
+            resolved_url = None
+
+    if not resolved_url and isinstance(fallback_url, str):
+        fallback_url = fallback_url.strip()
+        if fallback_url and 'upgrade_access' not in fallback_url.lower():
+            resolved_url = fallback_url
+
+    if not resolved_url:
+        resolved_url = LOCAL_PLANT_PLACEHOLDER
+
+    if cleaned_name:
+        PLANT_IMAGE_CACHE[cleaned_name] = resolved_url
+    return resolved_url
+
+
+resolve_plant_image = resolvePlantImage
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -805,25 +884,30 @@ class PlantSearchProxy(APIView):
 
             # Normalización/limpieza del payload para el frontend
             raw_items = raw_data.get('data', raw_data if isinstance(raw_data, list) else [])
-            cleaned_results = [
-                {
+            cleaned_results = []
+            for item in raw_items:
+                scientific_names = item.get('scientific_name')
+                scientific_name = None
+                if isinstance(scientific_names, list) and scientific_names:
+                    scientific_name = normalizeScientificName(scientific_names[0])
+                    if not scientific_name:
+                        scientific_name = None
+
+                default_image = item.get('default_image')
+                fallback_url = (
+                    default_image.get('thumbnail')
+                    if isinstance(default_image, dict)
+                    else None
+                )
+
+                cleaned_results.append({
                     'api_species_id': str(item.get('id')),
                     'common_name': item.get('common_name'),
-                    'scientific_name': (
-                        item.get('scientific_name')[0]
-                        if isinstance(item.get('scientific_name'), list) and item.get('scientific_name')
-                        else item.get('scientific_name')
-                    ),
+                    'scientific_name': scientific_name,
                     'watering': item.get('watering'),
                     'sunlight': item.get('sunlight', []),
-                    'thumbnail': (
-                        item.get('default_image', {}).get('thumbnail')
-                        if isinstance(item.get('default_image'), dict)
-                        else None
-                    ),
-                }
-                for item in raw_items
-            ]
+                    'thumbnail': resolvePlantImage(scientific_name, fallback_url),
+                })
 
             return Response({'query': query, 'count': len(cleaned_results), 'results': cleaned_results})
 
