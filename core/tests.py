@@ -94,6 +94,20 @@ class PlantImageResolverTests(SimpleTestCase):
         )
 
     @patch('core.views.requests.get')
+    def test_catalog_never_reuses_generic_local_thumbnail(self, mock_get):
+        import requests
+        mock_get.side_effect = requests.exceptions.HTTPError()
+        copihue = next(
+            item for item in CHILEAN_PLANT_CATALOG
+            if item['common_name'] == 'Copihue'
+        )
+
+        normalized = PlantSearchProxy._normalize_catalog([copihue])
+
+        self.assertEqual(normalized[0]['thumbnail'], LOCAL_PLANT_PLACEHOLDER)
+        self.assertNotEqual(normalized[0]['thumbnail'], copihue['thumbnail'])
+
+    @patch('core.views.requests.get')
     def test_uses_inaturalist_before_wikipedia_and_fallback(self, mock_get):
         mock_get.return_value.raise_for_status.return_value = None
         mock_get.return_value.json.return_value = {
