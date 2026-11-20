@@ -925,13 +925,14 @@ class ChatbotAPIView(APIView):
 
         history = request.data.get('history', [])
         plant_context = request.data.get('plant_context')
+        fleet_context = request.data.get('fleet_context')
 
         # Construir el prompt de sistema enriquecido con telemetría/planta si está disponible
         system_content = FLORABOT_SYSTEM_PROMPT
         if plant_context and isinstance(plant_context, dict):
-            context_lines = ["\n[Contexto actual del usuario en SmartGarden]:"]
+            context_lines = ["\n[Contexto actual de la maceta activa en SmartGarden]:"]
             if plant_context.get('name'):
-                context_lines.append(f"- Planta: {plant_context.get('name')}")
+                context_lines.append(f"- Planta activa: {plant_context.get('name')}")
             if plant_context.get('scientific_name'):
                 context_lines.append(f"- Especie científica: {plant_context.get('scientific_name')}")
             if plant_context.get('soil_moisture') is not None:
@@ -946,8 +947,42 @@ class ChatbotAPIView(APIView):
                 context_lines.append(f"- Rango térmico seguro: {plant_context.get('temp_min')}°C a {plant_context.get('temp_max')}°C")
             if plant_context.get('humedad_min') is not None:
                 context_lines.append(f"- Humedad mínima del sustrato recomendada: {plant_context.get('humedad_min')}%")
-            context_lines.append("\nINSTRUCCIÓN CRÍTICA: El usuario tiene en pantalla su maceta y los sensores de telemetría IoT en tiempo real. Cuando consulte '¿cómo está mi planta?', 'estado de mi planta' o dudas similares, diagnostica DIRECTAMENTE su condición actual usando estos valores reales y compáralos con las necesidades óptimas de la especie, sin pedirle que te vuelva a dar los datos.")
+            context_lines.append("\nINSTRUCCIÓN CRÍTICA: El usuario tiene en pantalla su maceta y los sensores de telemetría IoT en tiempo real. Cuando consulte '¿cómo está mi planta?', 'estado de mi planta' o dudas sobre la maceta activa, diagnostica DIRECTAMENTE su condición actual usando estos valores reales y compáralos con las necesidades óptimas de la especie, sin pedirle que te vuelva a dar los datos.")
             system_content += "\n".join(context_lines)
+
+        # Inyectar el inventario de TODAS las plantas de la sesión del usuario (Flota Completa)
+        if fleet_context and isinstance(fleet_context, list) and len(fleet_context) > 0:
+            fleet_lines = [f"\n[Cartelera de la flota completa del usuario ({len(fleet_context)} macetas registradas)]:"]
+            for idx, p in enumerate(fleet_context, 1):
+                p_name = p.get('name') or f"Planta #{idx}"
+                p_spec = p.get('scientific_name') or "Especie botánica"
+                p_sel = " (★ Seleccionada actualmente en pantalla)" if p.get('selected') else ""
+                p_temp = f"{p.get('temperature')}°C" if p.get('temperature') is not None else "N/A"
+                p_soil = f"{p.get('soil_moisture')}%" if p.get('soil_moisture') is not None else "N/A"
+                p_light = f"{p.get('light_lux')}%" if p.get('light_lux') is not None else "N/A"
+                p_min_h = f"{p.get('humedad_min')}%" if p.get('humedad_min') is not None else "30%"
+                p_temp_range = f"{p.get('temp_min', 10)}°C a {p.get('temp_max', 35)}°C"
+                p_health = p.get('health_label') or "Estado normal"
+                p_issues = p.get('health_issues') or "Condiciones estables"
+
+                fleet_lines.append(
+                    f"{idx}. {p_name} ({p_spec}){p_sel}:\n"
+                    f"   - Sensores en vivo: Temp: {p_temp} | Humedad Suelo: {p_soil} (Mínimo requerido: {p_min_h}) | Luz: {p_light}\n"
+                    f"   - Rango térmico: {p_temp_range} | Diagnóstico de salud: {p_health} ({p_issues})"
+                )
+
+            fleet_lines.append(
+                "\nINSTRUCCIONES DE ATENCIÓN DE FLOTA COMPLETA:\n"
+                "1. Tienes visibilidad de TODAS las plantas registradas por el usuario con su telemetría viva individual.\n"
+                "2. Si el usuario pregunta por 'todas mis plantas', 'resumen de mi jardín', 'cuál planta necesita agua o atención', o consultas globales:\n"
+                "   - Entrega un informe panorámico claro y comparativo de cada planta de su flota.\n"
+                "   - Prioriza las plantas que presenten alertas (humedad bajo el mínimo tolerable o temperatura fuera de rango).\n"
+                "   - Indica claramente recomendaciones agronómicas específicas para cada una (por ejemplo: cuántos ml regar a la que lo requiera).\n"
+                "3. Si el usuario pregunta por una planta en específico (por ejemplo: su 'limón', su 'olivo', su 'menta' o la seleccionada):\n"
+                "   - Localiza esa planta en la lista de la flota, responde con precisión usando sus lecturas de sensores y dale recomendaciones exclusivas para esa especie.\n"
+                "4. Utiliza viñetas destacadas o tablas compactas botánicas para que la respuesta sea ágil y ordenada."
+            )
+            system_content += "\n".join(fleet_lines)
 
 
         messages = [{"role": "system", "content": system_content}]
