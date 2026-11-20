@@ -8,6 +8,8 @@ from .views import (
     PLANT_IMAGE_CACHE,
     LOCAL_PLANT_PLACEHOLDER,
     SPANISH_PLANT_SEARCH_ALIASES,
+    PlantSearchProxy,
+    CHILEAN_PLANT_CATALOG,
     normalizeScientificName,
     resolvePlantImage,
 )
@@ -69,6 +71,26 @@ class PlantImageResolverTests(SimpleTestCase):
         self.assertIn(
             'chamomile',
             SPANISH_PLANT_SEARCH_ALIASES['manzanilla'],
+        )
+
+    @patch('core.views.requests.get')
+    def test_catalog_copihue_resolves_by_scientific_name(self, mock_get):
+        mock_get.return_value.raise_for_status.return_value = None
+        mock_get.return_value.json.return_value = {
+            'results': [{
+                'default_photo': {'medium_url': 'https://example.com/copihue.jpg'},
+            }],
+        }
+        copihue = next(
+            item for item in CHILEAN_PLANT_CATALOG
+            if item['common_name'] == 'Copihue'
+        )
+
+        normalized = PlantSearchProxy._normalize_catalog([copihue])
+
+        self.assertEqual(
+            normalized[0]['thumbnail'],
+            'https://example.com/copihue.jpg',
         )
 
     @patch('core.views.requests.get')

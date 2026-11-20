@@ -965,12 +965,15 @@ class PlantSearchProxy(APIView):
                 'family': item['family'],
                 'watering': item['watering'],
                 'sunlight': item['sunlight'],
-                'thumbnail': (
-                    '/plants/ornamental.svg' if item['api_species_id'] in ORNAMENTAL_PLANTS
-                    else '/plants/shrub.svg' if item['api_species_id'] in SHRUB_PLANTS
-                    else '/plants/tree.svg' if item['api_species_id'] in TREE_PLANTS
-                    else '/plants/herb.svg' if item['api_species_id'] in HERB_PLANTS
-                    else item['thumbnail']
+                'thumbnail': resolvePlantImage(
+                    item['scientific_name'],
+                    (
+                        '/plants/ornamental.svg' if item['api_species_id'] in ORNAMENTAL_PLANTS
+                        else '/plants/shrub.svg' if item['api_species_id'] in SHRUB_PLANTS
+                        else '/plants/tree.svg' if item['api_species_id'] in TREE_PLANTS
+                        else '/plants/herb.svg' if item['api_species_id'] in HERB_PLANTS
+                        else item['thumbnail']
+                    ),
                 ),
                 'temp_min': item['temp_min'],
                 'temp_max': item['temp_max'],
