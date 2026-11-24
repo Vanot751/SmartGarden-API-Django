@@ -4,6 +4,88 @@ Backend IoT para monitorear módulos de jardinería inteligente, plantas y lectu
 de sensores. Está construido con Django REST Framework, autenticación JWT y
 aislamiento multiusuario.
 
+---
+
+## 📦 Entregables Oficiales — Evaluación Sumativa 4
+
+| Entregable | Archivo / Recurso | Descripción |
+| :--- | :--- | :--- |
+| **Informe de Valor (Entregable 7)** | [`docs/INFORME_DE_VALOR_EVA4.md`](./docs/INFORME_DE_VALOR_EVA4.md) | Justificación de arquitectura, usuarios, problema y 3 características avanzadas (IA, Tiempo Real, 3D/Gráficos). |
+| **Guion Video Demostrativo (Entregable 6)** | [`docs/GUION_VIDEO_DEMOSTRATIVO.md`](./docs/GUION_VIDEO_DEMOSTRATIVO.md) | Pauta cronológica minuto a minuto (6 a 10 min) con roles divididos entre Alexander Cortés y Angelo Zamora. |
+| **Pruebas Automatizadas Postman** | [`tests/SmartGarden_EVA4_Postman_Collection.json`](./tests/SmartGarden_EVA4_Postman_Collection.json) | Colección v2.1 con aserciones para Auth JWT, FloraBot IA, CRUD Macetas y Catálogo (200 OK, 400, 401). |
+| **Plantilla de Entorno Seguro** | [`.env.example`](./.env.example) | Variables de entorno del servidor (PostgreSQL, Groq Cloud, Django Secret). |
+| **Documentación Swagger / OpenAPI** | [https://smart-garden-api-django.vercel.app/api/docs/](https://smart-garden-api-django.vercel.app/api/docs/) | Documentación interactiva de la API REST en producción. |
+| **API en Producción (Vercel)** | [https://smart-garden-api-django.vercel.app/](https://smart-garden-api-django.vercel.app/) | Despliegue cloud del backend en producción. |
+| **Portal Web Consumidor (Vercel)** | [https://smart-garden-web-react.vercel.app/](https://smart-garden-web-react.vercel.app/) | Cliente consumidor web con Gemelo 3D, Chart.js y FloraBot IA. |
+
+---
+
+## 🏗️ Diagrama Formal de Arquitectura Backend y Ecosistema
+
+Diagrama formal de arquitectura de software estratificado con estereotipos normativos (UML Component & Deployment):
+
+```mermaid
+flowchart TD
+    %% Estilos formales de alto contraste para Modo Oscuro y Modo Claro
+    classDef actorStyle fill:#1e3a5f,stroke:#60a5fa,stroke-width:2px,color:#ffffff;
+    classDef clientStyle fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#ffffff;
+    classDef brokerStyle fill:#451a03,stroke:#fbbf24,stroke-width:2px,color:#ffffff;
+    classDef backendStyle fill:#3b0764,stroke:#c084fc,stroke-width:2px,color:#ffffff;
+    classDef dbStyle fill:#0f172a,stroke:#94a3b8,stroke-width:2px,color:#ffffff;
+    classDef extStyle fill:#500724,stroke:#f472b6,stroke-width:2px,color:#ffffff;
+    classDef hwStyle fill:#164e63,stroke:#22d3ee,stroke-width:2px,color:#ffffff;
+
+    subgraph USUARIOS["👥 Capa de Usuarios"]
+        Operador["«actor»<br/><b>Operador / Agricultor</b><br/>Monitoreo y Control Agronómico"]:::actorStyle
+    end
+
+    subgraph CLIENTES["📱 Capa de Clientes (Frontend)"]
+        WebApp["«component»<br/><b>Portal Web (SPA)</b><br/>React 19 • Three.js • Chart.js<br/><b>★ Caract. 2: 3D &amp; Gráficos Dinámicos</b>"]:::clientStyle
+        MobileApp["«component»<br/><b>Cliente Móvil Nativo</b><br/>Android • Kotlin • Jetpack Compose"]:::clientStyle
+    end
+
+    subgraph REALTIME["⚡ Capa de Tiempo Real (Baja Latencia)"]
+        Firebase[("«database: NoSQL»<br/><b>Firebase Realtime Database</b><br/>Broker Pub/Sub Multi-Tenant<br/><b>★ Caract. 1: Tiempo Real &lt; 30ms</b>")]:::brokerStyle
+    end
+
+    subgraph BACKEND["⚙️ Capa de Negocio (Backend Serverless)"]
+        DjangoAPI["«component»<br/><b>API REST Core</b><br/>Django 5.x • DRF • SimpleJWT<br/>Gestión de Macetas, Catálogo y Proxy IA"]:::backendStyle
+    end
+
+    subgraph SERVICIOS["💾 Persistencia &amp; Servicios Cloud"]
+        SupabaseDB[("«database: RDBMS»<br/><b>PostgreSQL Transaccional</b><br/>Supabase Cloud (Pooler 5432)")]:::dbStyle
+        GroqCloud["«external service»<br/><b>Inferencia IA (FloraBot)</b><br/>GroqCloud • openai/gpt-oss-120b<br/><b>★ Caract. 3: Procesamiento con IA</b>"]:::extStyle
+    end
+
+    subgraph IOT["🌱 Capa de Hardware / Ingesta IoT"]
+        Sensores["«hardware: sensor»<br/>DHT11 &amp; LDR / Simulador"]:::hwStyle
+        ESP32["«device»<br/><b>ESP32 DevKit / Simulator</b><br/>Firmware C/C++ / iot_simulator.py"]:::hwStyle
+        Actuadores["«hardware: actuator»<br/>Relés Bomba &amp; Nebulizador"]:::hwStyle
+
+        Sensores -->|"Lectura GPIO/ADC"| ESP32
+        ESP32 -->|"Control Digital"| Actuadores
+    end
+
+    %% Flujos de interacción de Usuarios
+    Operador -->|"Navegación HTTPS"| WebApp
+    Operador -->|"Interacción Táctil"| MobileApp
+
+    %% Flujos de Telemetría y Tiempo Real
+    ESP32 ==>|"HTTP PUT (JSON / WiFi)"| Firebase
+    Firebase ==>|"Streaming SSE (sub-30ms)"| MobileApp
+    Firebase <==>|"EventSource Bidireccional"| WebApp
+
+    %% Flujos de Autenticación y Negocio REST
+    WebApp -->|"HTTPS / REST (JWT Bearer)"| DjangoAPI
+    MobileApp -->|"HTTPS / REST (JWT Bearer)"| DjangoAPI
+
+    %% Flujos de Persistencia y LLM
+    DjangoAPI <-->|"SQL / TCP 5432"| SupabaseDB
+    DjangoAPI <-->|"HTTPS / REST"| GroqCloud
+```
+
+---
+
 ## Características
 
 - Gestión de módulos IoT asociados al usuario autenticado.

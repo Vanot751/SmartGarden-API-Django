@@ -1,0 +1,333 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "SmartGarden - Evaluación Sumativa 4 (INACAP)",
+    "description": "Colección completa de pruebas para la Evaluación Sumativa 4 de Programación Backend.\nIncluye flujos end-to-end, autenticación JWT, CRUD, integración con Inteligencia Artificial (FloraBot con telemetría en tiempo real) y casos de prueba exitosos y de error.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://smart-garden-api-django.vercel.app",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación JWT",
+      "item": [
+        {
+          "name": "[ÉXITO] Login - Obtener Tokens JWT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Respuesta incluye tokens access y refresh\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('access');",
+                  "    pm.expect(jsonData).to.have.property('refresh');",
+                  "    pm.collectionVariables.set(\"access_token\", jsonData.access);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "token", ""]
+            },
+            "description": "Caso exitoso: autenticación de usuario y captura automática del token JWT en la variable de colección."
+          }
+        },
+        {
+          "name": "[ERROR] Login - Credenciales Incorrectas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 401 Unauthorized\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Respuesta contiene mensaje de error de credenciales\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('detail');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"usuario_invalido\",\n  \"password\": \"clave_erronea_999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "token", ""]
+            },
+            "description": "Caso de error: validación de credenciales inválidas rechazadas con código 401."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Integración IA (FloraBot con Telemetría Real)",
+      "item": [
+        {
+          "name": "[ÉXITO] FloraBot - Asistencia Agronómica con Telemetría en Vivo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"FloraBot entrega diagnóstico y status exitoso\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql(\"success\");",
+                  "    pm.expect(jsonData.response).to.be.a(\"string\");",
+                  "    pm.expect(jsonData.response.length).to.be.above(20);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Cómo está mi planta ahora mismo? ¿Necesita riego?\",\n  \"history\": [],\n  \"plant_context\": {\n    \"name\": \"Limonero en Maceta\",\n    \"scientific_name\": \"Citrus limon\",\n    \"temp_min\": 5,\n    \"temp_max\": 35,\n    \"humedad_min\": 30,\n    \"dosis_riego_ml\": 250,\n    \"temperature\": 29.5,\n    \"soil_moisture\": 22.0,\n    \"light_lux\": 85\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chat/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chat", ""]
+            },
+            "description": "Caso exitoso: FloraBot recibe la telemetría viva de sensores reales (22% humedad de suelo vs 30% mínimo) y emite un diagnóstico agronómico contextualizado usando Groq LLM."
+          }
+        },
+        {
+          "name": "[ERROR] FloraBot - Mensaje Vacío (Validación)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Retorna error de mensaje requerido\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql(\"error\");",
+                  "    pm.expect(jsonData.error).to.include(\"No se proporcionó ningún mensaje\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"   \",\n  \"history\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chat/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chat", ""]
+            },
+            "description": "Caso de error: envío de payload sin mensaje, validado por el backend con HTTP 400."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Gestión de Flota y Macetas (CRUD)",
+      "item": [
+        {
+          "name": "[ÉXITO] Listar Macetas del Operador Autenticado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Respuesta es una lista o paginación válida\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData) || Array.isArray(jsonData.results)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user-plants/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user-plants", ""]
+            },
+            "description": "Caso exitoso: recuperación de la flota de macetas filtradas estrictamente para el usuario autenticado."
+          }
+        },
+        {
+          "name": "[ERROR] Listar Macetas sin Token (No Autorizado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 401 Unauthorized\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/user-plants/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user-plants", ""]
+            },
+            "description": "Caso de error: acceso denegado a recursos protegidos sin suministrar encabezado Authorization."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Catálogo Botánico y Búsqueda",
+      "item": [
+        {
+          "name": "[ÉXITO] Buscar Especie en Catálogo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Resultados contienen especies encontradas\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var items = jsonData.results || jsonData;",
+                  "    pm.expect(items.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/plants/search/?q=limonero",
+              "host": ["{{base_url}}"],
+              "path": ["api", "plants", "search", ""],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "limonero"
+                }
+              ]
+            },
+            "description": "Caso exitoso: consulta al catálogo botánico con normalización de especies chilenas y fallback."
+          }
+        },
+        {
+          "name": "[ERROR] Buscar con Parámetro Vacío",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Estado HTTP es 400 Bad Request o lista vacía controlada\", function () {",
+                  "    pm.expect([200, 400]).to.include(pm.response.code);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/plants/search/?q=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "plants", "search", ""],
+              "query": [
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Caso de borde/error: consulta vacía manejada de forma resiliente."
+          }
+        }
+      ]
+    }
+  ]
+}
