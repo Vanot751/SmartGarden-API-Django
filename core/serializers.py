@@ -1,9 +1,46 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import GardenModule, UserPlant, TelemetryLog
 
 User = get_user_model()
+
+
+class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Serializador JWT que permite iniciar sesión con nombre de usuario o correo electrónico.
+    """
+
+    def to_internal_value(self, data):
+        if isinstance(data, dict) and not data.get(self.username_field) and data.get('email'):
+            mutable_data = data.copy()
+            mutable_data[self.username_field] = mutable_data.get('email')
+            data = mutable_data
+        return super().to_internal_value(data)
+
+    def validate(self, attrs):
+        identifier = (attrs.get(self.username_field) or '').strip()
+        password = attrs.get('password') or ''
+
+        if identifier:
+            attrs[self.username_field] = identifier
+            if not User.objects.filter(**{self.username_field: identifier}).exists():
+                candidates = list(User.objects.filter(email__iexact=identifier))
+                if len(candidates) == 1:
+                    attrs[self.username_field] = candidates[0].get_username()
+                elif len(candidates) > 1:
+                    matched_user = next(
+                        (candidate for candidate in candidates if candidate.check_password(password)),
+                        None,
+                    )
+                    if matched_user is not None:
+                        attrs[self.username_field] = matched_user.get_username()
+
+        data = super().validate(attrs)
+        data['username'] = self.user.get_username()
+        data['email'] = self.user.email or ''
+        return data
 
 
 class RegisterSerializer(serializers.ModelSerializer):

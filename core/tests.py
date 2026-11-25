@@ -53,6 +53,71 @@ class RegisterViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class EmailOrUsernameLoginTests(APITestCase):
+    def setUp(self):
+        self.password = 'StrongGardenPass123!'
+        self.user = get_user_model().objects.create_user(
+            username='garden-user',
+            email='garden@example.com',
+            password=self.password,
+        )
+
+    def test_login_with_username_returns_tokens_and_canonical_username(self):
+        response = self.client.post(
+            '/api/token/',
+            {
+                'username': 'garden-user',
+                'password': self.password,
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
+        self.assertEqual(response.data['username'], 'garden-user')
+
+    def test_login_with_email_case_insensitive_on_auth_login_and_token(self):
+        for endpoint in ('/api/token/', '/api/auth/login/'):
+            response = self.client.post(
+                endpoint,
+                {
+                    'username': 'GARDEN@EXAMPLE.COM',
+                    'password': self.password,
+                },
+                format='json',
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertIn('access', response.data)
+            self.assertEqual(response.data['username'], 'garden-user')
+
+    def test_login_with_explicit_email_field(self):
+        response = self.client.post(
+            '/api/auth/login/',
+            {
+                'email': 'garden@example.com',
+                'password': self.password,
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['username'], 'garden-user')
+
+    def test_login_with_email_rejects_wrong_password(self):
+        response = self.client.post(
+            '/api/auth/login/',
+            {
+                'username': 'garden@example.com',
+                'password': 'WrongPassword123!',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
 class PlantImageResolverTests(SimpleTestCase):
     def setUp(self):
         PLANT_IMAGE_CACHE.clear()

@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import GardenModule, UserPlant, TelemetryLog
@@ -21,6 +22,7 @@ from .serializers import (
     UserPlantSerializer,
     TelemetryLogSerializer,
     RegisterSerializer,
+    EmailOrUsernameTokenObtainPairSerializer,
 )
 from .filters import TelemetryLogFilter
 
@@ -105,6 +107,13 @@ def resolvePlantImage(scientific_name, fallback_url):
 
 
 resolve_plant_image = resolvePlantImage
+
+class EmailOrUsernameTokenObtainPairView(TokenObtainPairView):
+    """
+    Permite autenticación JWT utilizando nombre de usuario o correo electrónico registrado.
+    """
+    serializer_class = EmailOrUsernameTokenObtainPairSerializer
+
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]

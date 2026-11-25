@@ -21,6 +21,7 @@ from core.views import (
     PlantSearchProxy,
     RegisterView,
     ChatbotAPIView,
+    EmailOrUsernameTokenObtainPairView,
 )
 from config.views import FrontendView
 
@@ -40,11 +41,11 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/admin/', permanent=False)),
 
     # Endpoints de Autenticación JWT
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair_standard'),
+    path('api/token/', EmailOrUsernameTokenObtainPairView.as_view(), name='token_obtain_pair_standard'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh_standard'),
     path('api/auth/register/', RegisterView.as_view(), name='register'),
     # Rutas heredadas conservadas para compatibilidad con clientes existentes.
-    path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/login/', EmailOrUsernameTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Documentación OpenAPI 3 / Swagger UI (drf-spectacular)
